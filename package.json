@@ -1,0 +1,32 @@
+{
+  "name": "react-stateful-fn",
+  "version": "0.1.0",
+  "description": "Stateful functional components for React. Because functional setState is your friend.",
+  "license": "MIT",
+  "author": "Andy Wermke <andy@dev.next-step-software.com>",
+  "scripts": {
+    "build": "babel src/ -d lib/",
+    "test": "standard src/**",
+    "prepublishOnly": "npm run build && npm test"
+  },
+  "babel": {
+    "presets": [
+      ["es2015", {"loose": true}]
+    ]
+  },
+  "keywords": [
+    "react",
+    "stateful",
+    "functional",
+    "component",
+    "setState"
+  ],
+  "peerDependencies": {
+    "react": ">= 0.14.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-preset-es2015": "^6.24.1",
+    "standard": "^10.0.2"
+  }
+}
