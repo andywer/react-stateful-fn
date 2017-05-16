@@ -10,6 +10,7 @@
     "test": "ava && standard src/**",
     "prepublishOnly": "npm run build && npm test"
   },
+  "repository": "andywer/react-stateful-fn",
   "ava": {
     "babel": {
       "presets": [
