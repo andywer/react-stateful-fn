@@ -7,8 +7,8 @@
 - [x] setState for functional components
 - [x] No need to bind your component methods
 - [x] Optimized for performance
+- [x] Extremely small: < 1kB (gzipped + minified)
 - [x] Zero dependencies
-- [x] Extremely small: < 3kB
 
 
 ## Installation
