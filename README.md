@@ -41,6 +41,8 @@ export default stateful(Counter, { clicks: 0 })
 
 As you can see, functional stateful components are good friends with [functional setState](https://medium.freecodecamp.com/functional-setstate-is-the-future-of-react-374f30401b6b).
 
+### We can do better
+
 But if you care about performance you will probably not be completely happy with the previous example:
 
 The button's `onClick` handler is an arrow function defined in the functional component. Thus it will be a different function on every render and will cause the button to re-render every time.
@@ -70,7 +72,7 @@ The handlers defined there will be passed to the component as props.
 If such a handler returns a function (as seen above) then this function is called with the `{ setState }` object, so you can update the state according to the event.
 
 
-## Sample: Forms
+## Forms
 
 Forms can be quite an elaborate business in React. Fortunately, stateful functional components turn out to be a convenient approach for easy form implementation.
 
