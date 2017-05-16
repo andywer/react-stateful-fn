@@ -1,13 +1,14 @@
 # react-stateful-fn - Functional *stateful* components
 
-[![JavaScript Style Guide](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
+[![Build Status](https://travis-ci.org/andywer/react-stateful-fn.svg?branch=master)](https://travis-ci.org/andywer/react-stateful-fn)
 [![NPM Version](https://img.shields.io/npm/v/react-stateful-fn.svg)](https://www.npmjs.com/package/react-stateful-fn)
+[![JavaScript Style Guide](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
 
-☑️ setState on functional components
-☑️ No need to bind your component methods
-☑️ Optimized for performance
-☑️ Zero dependencies
-☑️ Extremely small: < 3kB
+- [x] setState on functional components
+- [x] No need to bind your component methods
+- [x] Optimized for performance
+- [x] Zero dependencies
+- [x] Extremely small: < 3kB
 
 
 ## Installation
