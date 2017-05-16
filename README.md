@@ -4,7 +4,7 @@
 [![NPM Version](https://img.shields.io/npm/v/react-stateful-fn.svg)](https://www.npmjs.com/package/react-stateful-fn)
 [![JavaScript Style Guide](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
 
-- [x] setState on functional components
+- [x] setState for functional components
 - [x] No need to bind your component methods
 - [x] Optimized for performance
 - [x] Zero dependencies
@@ -43,9 +43,9 @@ As you can see, functional stateful components are good friends with [functional
 
 ### We can do better
 
-But if you care about performance you will probably not be completely happy with the previous example:
+But if you care about performance you will not be completely happy with the previous example:
 
-The button's `onClick` handler is an arrow function defined in the functional component. Thus it will be a different function on every render and will cause the button to re-render every time.
+The button's `onClick` handler is an arrow function defined in the functional component. Thus it will be a new function on every render and will cause the child component to re-render every time.
 
 Let's fix that:
 
@@ -67,14 +67,14 @@ export default stateful(Counter, { clicks: 0 }, {
 ```
 
 We can wire props and setState together outside the function, similar to Redux' `connect()`.
-The handlers defined there will be passed to the component as props.
+The handlers defined here will be passed to the component as props.
 
-If such a handler returns a function (as seen above) then this function is called with the `{ setState }` object, so you can update the state according to the event.
+If such handlers return a function (as seen above) then this function will be called with the `{ setState }` object, allowing you to update the state according to the event.
 
 
 ## Forms
 
-Forms can be quite an elaborate business in React. Fortunately, stateful functional components turn out to be a convenient approach for easy form implementation.
+Forms can be quite an elaborate business in React. Fortunately, stateful functional components turn out to be a convenient approach to create forms easily.
 
 ```js
 import stateful from 'react-stateful-fn'
@@ -109,7 +109,7 @@ export default stateful(LoginForm, initialState, {
 
 ### stateful(component: Function, initialState: ?Object, propHandlers: ?Object): Function
 
-Make a functional stateless component stateful.
+Make a functional component stateful. Wraps the component with a thin `React.Component` class and takes care to minimize the work done in `render()` to optimize performance.
 
 #### component
 
