@@ -83,8 +83,8 @@ import stateful from 'react-stateful-fn'
  */
 const LoginForm = (props, state) => (
   <form>
-    <input type='text' placeholder='Email' value={state.email} onChange={props.onEmailChange} />
-    <input type='text' placeholder='Password' value={state.password} onChange={props.onPasswordChange} />
+    <input type='email' placeholder='Email' value={state.email} onChange={props.onEmailChange} />
+    <input type='password' placeholder='Password' value={state.password} onChange={props.onPasswordChange} />
     <button type='submit' onClick={props.onSubmitClick}>Login</button>
   </form>
 )
