@@ -4,8 +4,12 @@
 [![NPM Version](https://img.shields.io/npm/v/react-stateful-fn.svg)](https://www.npmjs.com/package/react-stateful-fn)
 [![JavaScript Style Guide](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
 
+Functional components are considered best practice in React, but as soon as we need local component state we cannot use them. Let's fix that!
+
+What this package provides:
+
 - [x] setState for functional components
-- [x] No need to bind your component methods
+- [x] No need to bind component methods
 - [x] Optimized for performance
 - [x] Extremely small: < 1kB (gzipped + minified)
 - [x] Zero dependencies
@@ -41,9 +45,9 @@ export default stateful(Counter, { clicks: 0 })
 
 As you can see, functional stateful components are good friends with [functional setState](https://medium.freecodecamp.com/functional-setstate-is-the-future-of-react-374f30401b6b).
 
-### We can do better
+### Optimizing
 
-But if you care about performance you will not be completely happy with the previous example:
+If you care about performance you will not be completely happy with the previous example:
 
 The button's `onClick` handler is an arrow function defined in the functional component. Thus it will be a new function on every render and will cause the child component to re-render every time.
 
