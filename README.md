@@ -134,6 +134,13 @@ If a property of `propHandlers` is not a function it will be added to the compon
 If a `propHandlers` handler returns a function this function will be called with the parameters `({ setState }, props, state)`.
 
 
+## See also
+
+Another great tool for writing functional React components is [recompose](https://github.com/acdlite/recompose). Use its [withContext()](https://github.com/acdlite/recompose/blob/master/docs/API.md#withcontext) if you need stateful functional components with access to the context. It also comes with [withState()](https://github.com/acdlite/recompose/blob/master/docs/API.md#withstate) which allows you to write stateful functional components like this package does.
+
+`Recompose` allows you to compose functional components very nicely, including the component state. Beware that you will *have to* compose the component state and end up having X stateful components under the hood if you need X different properties in a component's state. That might decrease performance.
+
+
 ## License
 
 MIT
