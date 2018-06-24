@@ -1,8 +1,10 @@
 # react-addstate - Add state to functional components
 
+<!--
 [![Build Status](https://travis-ci.org/andywer/react-addstate.svg?branch=master)](https://travis-ci.org/andywer/react-addstate)
 [![NPM Version](https://img.shields.io/npm/v/react-addstate.svg)](https://www.npmjs.com/package/react-addstate)
 [![JavaScript Style Guide](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
+-->
 
 Do one thing and do it well: Add a thin wrapper of loosely-coupled state handling to your functional components.
 
