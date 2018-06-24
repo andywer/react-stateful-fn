@@ -1,26 +1,28 @@
-# react-stateful-fn - Functional *stateful* components
+# react-addstate - Add state to functional components
 
-[![Build Status](https://travis-ci.org/andywer/react-stateful-fn.svg?branch=master)](https://travis-ci.org/andywer/react-stateful-fn)
-[![NPM Version](https://img.shields.io/npm/v/react-stateful-fn.svg)](https://www.npmjs.com/package/react-stateful-fn)
+[![Build Status](https://travis-ci.org/andywer/react-addstate.svg?branch=master)](https://travis-ci.org/andywer/react-addstate)
+[![NPM Version](https://img.shields.io/npm/v/react-addstate.svg)](https://www.npmjs.com/package/react-addstate)
 [![JavaScript Style Guide](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
 
-Functional components are considered best practice in React, but as soon as we need local component state we cannot use them. Let's fix that!
+Do one thing and do it well: Add a thin wrapper of loosely-coupled state handling to your functional components.
 
 What this package provides:
 
-- [x] setState for functional components
-- [x] No need to bind component methods
+- [x] state for functional components
+- [x] No need to bind handler methods
 - [x] Optimized for performance
-- [x] Extremely small: < 1kB (gzipped + minified)
+- [x] Extremely small: < 1kB (minified)
 - [x] Zero dependencies
+
+Formerly known as *react-stateful-fn* (see [v0.1 branch](https://github.com/andywer/react-stateful-fn/tree/v0.1)).
 
 
 ## Installation
 
 ```sh
-npm install react-stateful-fn
+npm install react-addstate
 # or
-yarn add react-stateful-fn
+yarn add react-addstate
 ```
 
 
@@ -29,70 +31,159 @@ yarn add react-stateful-fn
 Let's have a look at everyone's favorite sample code: A simple counter widget.
 
 ```js
-import stateful from 'react-stateful-fn'
+import addState from 'react-addstate'
 
-const increase = () => state => ({ clicks: state.clicks + 1 })
-
-const Counter = (props, state, { setState }) => (
+const Counter = ({ clicks = 0, increase }) => (
   <div>
-    <div>Clicked {state.clicks} times</div>
-    <button onClick={() => setState(increase())}>Increase +</button>
+    <div>Clicked {clicks} times</div>
+    <button onClick={increase}>Increase +</button>
   </div>
 )
 
-export default stateful(Counter, { clicks: 0 })
+const addCounterState = addState(setState => ({
+  increase: () => setState(prevState => ({ clicks: prevState.clicks + 1 }))
+}))
+
+export default addCounterState(Counter)
 ```
 
-As you can see, functional stateful components are good friends with [functional setState](https://medium.freecodecamp.com/functional-setstate-is-the-future-of-react-374f30401b6b).
+So `addState(setState => ({ ...handlers }))` creates a `addCounterState` function. Applying this function to our `Counter` component wraps it in a tiny stateful component that just manages the counter's state.
 
-### Optimizing
+The state and state handler functions are exposed to `Counter` as additional properties. Every property in the state is passed as a property to `Counter` and so is every state handler function defined in the `addState()` call (= `increase`).
 
-If you care about performance you will not be completely happy with the previous example:
+As you can see, we use [functional setState](https://medium.freecodecamp.com/functional-setstate-is-the-future-of-react-374f30401b6b) to update the state in `increase` depending on the previous state.
 
-The button's `onClick` handler is an arrow function defined in the functional component. Thus it will be a new function on every render and will cause the child component to re-render every time.
 
-Let's fix that:
+## TypeScript
 
-```js
-import stateful from 'react-stateful-fn'
+`react-addstate` comes with TypeScript typings out of the box, resulting in a nice developer experience using VS Code, even if you are not using TypeScript in your application.
 
-const increase = () => state => ({ clicks: state.clicks + 1 })
+A major focus has been automatic type inference, so you don't have to manually specify types too much. Let TypeScript do the heavy-lifting for you!
 
-const Counter = (props, state) => (
+```tsx
+import addState from 'react-addstate'
+
+const Counter = (props: { clicks: number, increase: () => void }) => (
   <div>
-    <div>Clicked {state.clicks} times</div>
-    <button onClick={props.onClick}>Increase +</button>
+    <div>Clicked {props.clicks} times</div>
+    <button onClick={props.increase}>Increase +</button>
   </div>
 )
 
-export default stateful(Counter, { clicks: 0 }, {
-  onClick: event => ({ setState }) => setState(increase())
-})
+interface State {
+  clicks: number
+}
+
+const initialState: State = {
+  clicks: 0
+}
+
+const addCounterState = addState<State>(setState => ({
+  increase: () => setState(prevState => ({ clicks: prevState.clicks + 1 }))
+}), initialState)
+
+export default addCounterState(Counter)
 ```
 
-We can wire props and setState together outside the function, similar to Redux' `connect()`.
-The handlers defined here will be passed to the component as props.
 
-If such handlers return a function (as seen above) then this function will be called with the `{ setState }` object, allowing you to update the state according to the event.
+## Why?
+
+### Performance: Clean `onClick` event handler
+
+A key performance aspect of a React application is to avoid unnecessary rerenders. You are supposed to **not** use arrow functions or `.bind()` event handlers in the render function:
+
+```jsx
+class Counter extends React.Component {
+  // ...
+
+  render () {
+    return <button onClick={() => this.setState({ /* ... */ })}>Increase +</button>   // BAD
+    return <button onClick={() => this.increase)}>Increase +</button>                 // BAD
+    return <button onClick={this.increase.bind(this)}>Increase +</button>             // BAD
+  }
+}
+
+const Counter = ({ increase }) => {
+  // GOOD: Always pass the same function reference as event handler
+  return <button onClick={increase}>Increase +</button>
+}
+```
+
+With `addState` we have a simple generic solution to avoid this anti-pattern completely. Read more about the details [here](https://medium.com/@machnicki/handle-events-in-react-with-arrow-functions-ede88184bbb).
+
+### Separation of Concern
+
+With `addState` we cleanly separate representational code (defining the visual output and assigning event handlers) and state management logic (how to derive a new state based on an event and the previous state).
+
+As a professional developer having worked on several enterprise-grade React projects over the years I have constantly encountered ever-growing "Hydra" components:
+
+```jsx
+class Hydra extends React.Component {
+  render () {
+    // use a few props, but not all
+    // render something
+    // render X, Y
+  }
+  renderFeatureX () {
+    // use some state, but not all of it
+    // render something
+    // render Z
+    // some state changes
+  }
+  renderFeatureY () {
+    // use some more state
+    // render something else
+  }
+  renderFeatureZ () {
+    // ...
+  }
+}
+```
+
+Such a component does not just mix up the rendering of what should be multiple components, but it probably has state management shattered all across the component as well. Such a component file can easily grow to several hundred lines of code in a matter of days.
+
+Consequently using functional React components can counter this anti-pattern early on.
+
+### Why not [recompose](https://github.com/acdlite/recompose)
+
+`recompose` is a nice library and with its functions `withState` and `withHandler` it provides the utilities to do the same thing.
+
+However, I experienced a few issues with it:
+
+1. The code can be quite hard to read (imagine the sample with several more state props):
+
+```jsx
+const StatefulForm = compose(
+  withState('password', 'setPassword', null),
+  withHandlers({
+    // I constantly have to look up this bit:
+    clearPassword: ({ setPassword }) => () => setPassword(null)
+  })
+)(Form)
+```
+
+2. TypeScript types. Automatic type inference didn't work too well. Manually adding multiple property types to `compose` leads to *really hard to read* code. Manually adding types to each `withState()` and `withHandlers()` invocation feels even worse.
+
+3. Using `withState` you end up having one stateful wrapping component *for each `withState()` and for each `withHandlers()`*. Using `addState` yields *one wrapping component altogether* .
 
 
 ## Forms
 
-Forms can be quite an elaborate business in React. Fortunately, stateful functional components turn out to be a convenient approach to create forms easily.
+Forms can be quite an elaborate business in React. Fortunately, `addState` turn out to be a convenient approach to create forms easily.
 
-```js
-import stateful from 'react-stateful-fn'
+```jsx
+import addState from 'react-addstate'
 
 /**
  * Use as:
  *
  * <LoginForm onLogin={(email, password) => { ... }} />
  */
-const LoginForm = (props, state) => (
+const LoginForm = ({ email, password, onSubmit, updateEmail, updatePassword }) => (
   <form>
-    <input type='email' placeholder='Email' value={state.email} onChange={props.onEmailChange} />
-    <input type='password' placeholder='Password' value={state.password} onChange={props.onPasswordChange} />
-    <button type='submit' onClick={props.onSubmitClick}>Login</button>
+    <input type='email' placeholder='Email' value={email} onChange={updateEmail} />
+    <input type='password' placeholder='Password' value={password} onChange={updatePassword} />
+    <button type='submit' onClick={onSubmit}>Login</button>
   </form>
 )
 
@@ -101,44 +192,37 @@ const initialState = {
   password: ''
 }
 
-export default stateful(LoginForm, initialState, {
-  onEmailChange: event => ({ setState }) => setState({ email: event.target.value }),
-  onPasswordChange: event => ({ setState }) => setState({ password: event.target.value }),
-  onSubmitClick: event => (_, props, state) => props.onLogin(state.email, state.password)
-})
+const addLoginFormState = addState((setState, getProps) => ({
+  updateEmail: event => setState({ email: event.target.value }),
+  updatePassword: event => setState({ password: event.target.value }),
+  onSubmit: () => {
+    // We use getProps() here to access props as passed to the stateless LoginForm
+    const { email, password, onLogin } = getProps()
+    onLogin(email, password)
+  }
+}), initialState)
+
+export default addLoginFormState(LoginForm)
 ```
 
 
 ## API
 
-### stateful(component: Function, initialState: ?Object, propHandlers: ?Object): Function
+Have a look at the [lib/index.d.ts](./lib/index.d.ts) TypeScript definition file.
 
-Make a functional component stateful. Wraps the component with a thin `React.Component` class and takes care to minimize the work done in `render()` to optimize performance.
+### addState(createHandlers: CreateHandlersFn, initialState?: any): StateWrapperFn
 
-#### component
+```ts
+type CreateHandlersFn = (setState: ReactSetStateFn, getProps: GetPropsFn) => Handlers
 
-This is supposed to be a functional React component. You can use any ordinary functional component. The difference to a stateless component are the additional parameters.
+type GetPropsFn = () => Props & State & Handlers
+type ReactSetStateFn = React.Component['setState']
+type StateWrapperFn = (component: React.ComponentType<Props & State & Handlers>) => React.ComponentType<Props>
 
-The component will be called with the parameters `(props: Object, state: Object, { setState: Function })`.
-
-#### initialState *(optional)*
-
-Pass a custom initial state here. Otherwise it will default to `{}`.
-
-#### propHandlers *(optional)*
-
-Use `propHandlers` to pass stateful event handlers as props to the component. Useful to avoid arrow function event handlers which are considered bad practice.
-
-If a property of `propHandlers` is not a function it will be added to the component's props as it is.
-
-If a `propHandlers` handler returns a function this function will be called with the parameters `({ setState }, props, state)`.
-
-
-## See also
-
-Another great tool for writing functional React components is [recompose](https://github.com/acdlite/recompose). Use its [withContext()](https://github.com/acdlite/recompose/blob/master/docs/API.md#withcontext) if you need stateful functional components with access to the context. It also comes with [withState()](https://github.com/acdlite/recompose/blob/master/docs/API.md#withstate) which allows you to write stateful functional components like this package does.
-
-`Recompose` allows you to compose functional components very nicely, including the component state. Beware that you will *have to* compose the component state and end up having X stateful components under the hood if you need X different properties in a component's state. That might decrease performance.
+interface Handlers {
+  [handlerName: string]: (...args: any[]) => any
+}
+```
 
 
 ## License

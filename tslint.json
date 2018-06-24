@@ -1,0 +1,10 @@
+{
+  "extends": [
+    "tslint-config-standard"
+  ],
+  "jsRules": {},
+  "rules": {
+    "await-promise": [true, "Bluebird"]
+  },
+  "rulesDirectory": []
+}
