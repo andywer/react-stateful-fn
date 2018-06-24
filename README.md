@@ -47,11 +47,11 @@ const addCounterState = addState(setState => ({
 export default addCounterState(Counter)
 ```
 
-So `addState(setState => ({ ...handlers }))` creates a `addCounterState` function. Applying this function to our `Counter` component wraps it in a tiny stateful component that just manages the counter's state.
+Using `addState(setState => ({ ...handlers }))` we create a `addCounterState` function that, when called with our `Counter` component, will wrap it in a tiny stateful component that manages the counter's state.
 
-The state and state handler functions are exposed to `Counter` as additional properties. Every property in the state is passed as a property to `Counter` and so is every state handler function defined in the `addState()` call (= `increase`).
+The state and state handler functions are exposed to `Counter` as properties. Every property in the state is passed as a property to `Counter` and so is every state handler function defined in the `addState()` call (= `increase`) and any other property.
 
-As you can see, we use [functional setState](https://medium.freecodecamp.com/functional-setstate-is-the-future-of-react-374f30401b6b) to update the state in `increase` depending on the previous state.
+As you can see, we use [functional setState](https://medium.freecodecamp.com/functional-setstate-is-the-future-of-react-374f30401b6b) to update the state based on the previous state in `increase`.
 
 
 ## TypeScript
@@ -74,13 +74,12 @@ interface State {
   clicks: number
 }
 
-const initialState: State = {
-  clicks: 0
-}
-
 const addCounterState = addState<State>(setState => ({
   increase: () => setState(prevState => ({ clicks: prevState.clicks + 1 }))
-}), initialState)
+}), {
+  // Initial state
+  clicks: 0
+})
 
 export default addCounterState(Counter)
 ```
@@ -113,9 +112,9 @@ With `addState` we have a simple generic solution to avoid this anti-pattern com
 
 ### Separation of Concern
 
-With `addState` we cleanly separate representational code (defining the visual output and assigning event handlers) and state management logic (how to derive a new state based on an event and the previous state).
+With `addState` we separate representational code and state management logic. It nicely matches the underlying design of React: Components as mappers from props to DOM and state machines.
 
-As a professional developer having worked on several enterprise-grade React projects over the years I have constantly encountered ever-growing "Hydra" components:
+As a professional developer having worked on several enterprise-grade React projects over the years, I have often encountered these ever-growing "Hydra" components:
 
 ```jsx
 class Hydra extends React.Component {
@@ -140,7 +139,7 @@ class Hydra extends React.Component {
 }
 ```
 
-Such a component does not just mix up the rendering of what should be multiple components, but it probably has state management shattered all across the component as well. Such a component file can easily grow to several hundred lines of code in a matter of days.
+Such a component does not just mix up what should be multiple components, but it will also be hard to see where props and state props are used. Such a component file can easily grow to several hundred lines of code in a matter of days.
 
 Consequently using functional React components can counter this anti-pattern early on.
 
@@ -208,8 +207,6 @@ export default addLoginFormState(LoginForm)
 
 ## API
 
-Have a look at the [lib/index.d.ts](./lib/index.d.ts) TypeScript definition file.
-
 ### addState(createHandlers: CreateHandlersFn, initialState?: any): StateWrapperFn
 
 ```ts
@@ -217,11 +214,12 @@ type CreateHandlersFn = (setState: ReactSetStateFn, getProps: GetPropsFn) => Han
 
 type GetPropsFn = () => Props & State & Handlers
 type ReactSetStateFn = React.Component['setState']
-type StateWrapperFn = (component: React.ComponentType<Props & State & Handlers>) => React.ComponentType<Props>
 
 interface Handlers {
   [handlerName: string]: (...args: any[]) => any
 }
+
+type StateWrapperFn = (component: React.ComponentType<Props & State & Handlers>) => React.ComponentType<Props>
 ```
 
 
