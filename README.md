@@ -6,7 +6,7 @@
 [![JavaScript Style Guide](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
 -->
 
-Do one thing and do it well: Add a thin wrapper of loosely-coupled state handling to your functional components.
+Do one thing and do it well: Add a thin layer of loosely-coupled component state to your functional components.
 
 What this package provides:
 
