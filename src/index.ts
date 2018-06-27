@@ -10,10 +10,11 @@ const addState = <State extends {}, OutwardProps extends {} = any, ResultingHand
     displayName: string
     handlers: ResultingHandlers
 
+    state = initialState as any || {}
+
     constructor (props: OutwardProps) {
       super(props)
       this.displayName = `AddState(${Component.displayName || Component.name || ''})`
-      this.state = initialState as any || {}
       this.handlers = createStateHandlers(this.setState.bind(this), this.getProps.bind(this))
     }
 
