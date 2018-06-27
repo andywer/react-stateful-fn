@@ -51,9 +51,9 @@ export default addCounterState(Counter)
 
 Using `addState(setState => ({ ...handlers }))` we create a `addCounterState` function that, when called with our `Counter` component, will wrap it in a tiny stateful component that manages the counter's state.
 
-The state and state handler functions are exposed to `Counter` as properties. Every property in the state is passed as a property to `Counter` and so is every state handler function defined in the `addState()` call (= `increase`) and any other property.
+The state and state update functions are exposed to `Counter` as properties. Every state property is passed as a property to `Counter` and so is every update function defined in the `addState()` call (= `increase`).
 
-As you can see, we use [functional setState](https://medium.freecodecamp.com/functional-setstate-is-the-future-of-react-374f30401b6b) to update the state based on the previous state in `increase`.
+As you can see, we use React's [functional setState](https://medium.freecodecamp.com/functional-setstate-is-the-future-of-react-374f30401b6b) to update the state based on the previous state in `increase`.
 
 
 ## TypeScript
