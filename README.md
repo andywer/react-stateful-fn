@@ -58,9 +58,7 @@ As you can see, we use [functional setState](https://medium.freecodecamp.com/fun
 
 ## TypeScript
 
-`react-addstate` comes with TypeScript typings out of the box, resulting in a nice developer experience using VS Code, even if you are not using TypeScript in your application.
-
-A major focus has been automatic type inference, so you don't have to manually specify types too much. Let TypeScript do the heavy-lifting for you!
+`react-addstate` comes with TypeScript typings out of the box, providing useful type information in your IDE, even if you are not using TypeScript in your application.
 
 ```tsx
 import addState from 'react-addstate'
@@ -89,7 +87,7 @@ export default addCounterState(Counter)
 
 ## Why?
 
-### Performance: Clean `onClick` event handler
+### Performance: Clean event handlers
 
 A key performance aspect of a React application is to avoid unnecessary rerenders. You are supposed to **not** use arrow functions or `.bind()` event handlers in the render function:
 
@@ -110,7 +108,7 @@ const Counter = ({ increase }) => {
 }
 ```
 
-With `addState` we have a simple generic solution to avoid this anti-pattern completely. Read more about the details [here](https://medium.com/@machnicki/handle-events-in-react-with-arrow-functions-ede88184bbb).
+With `addState` we have a generic and concise solution to avoid this anti-pattern completely. Read more about the details [here](https://medium.com/@machnicki/handle-events-in-react-with-arrow-functions-ede88184bbb).
 
 ### Separation of Concern
 
@@ -145,27 +143,15 @@ Such a component does not just mix up what should be multiple components, but it
 
 Consequently using functional React components can counter this anti-pattern early on.
 
-### Why not [recompose](https://github.com/acdlite/recompose)
+### Comparison to [recompose](https://github.com/acdlite/recompose)
 
 `recompose` is a nice library and with its functions `withState` and `withHandler` it provides the utilities to do the same thing.
 
 However, I experienced a few issues with it:
 
-1. The code can be quite hard to read (imagine the sample with several more state props):
+1. Types. Using `recompose` with TypeScript can be quite a pain, since you need to add types to each `withState()` and `withHandlers()` invocation or otherwise at least to the `compose()` which will make the code quite verbose and hard to read.
 
-```jsx
-const StatefulForm = compose(
-  withState('password', 'setPassword', null),
-  withHandlers({
-    // I constantly have to look up this bit:
-    clearPassword: ({ setPassword }) => () => setPassword(null)
-  })
-)(Form)
-```
-
-2. TypeScript types. Automatic type inference didn't work too well. Manually adding multiple property types to `compose` leads to *really hard to read* code. Manually adding types to each `withState()` and `withHandlers()` invocation feels even worse.
-
-3. Using `withState` you end up having one stateful wrapping component *for each `withState()` and for each `withHandlers()`*. Using `addState` yields *one wrapping component altogether* .
+2. You end up having one stateful wrapping component *for each `withState()` and for each `withHandlers()`*. Using `addState` yields *one wrapping component altogether*.
 
 
 ## Forms
