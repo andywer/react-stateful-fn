@@ -4,6 +4,8 @@
 [![NPM Version](https://img.shields.io/npm/v/react-stateful-fn.svg)](https://www.npmjs.com/package/react-stateful-fn)
 [![JavaScript Style Guide](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
 
+> ⚠️ This repository is archived. Use React hooks instead.
+
 Functional components are considered best practice in React, but as soon as we need local component state we cannot use them. Let's fix that!
 
 What this package provides:
